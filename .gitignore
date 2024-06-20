@@ -1,0 +1,8 @@
+
+node_modules/
+
+server/node_modules/
+
+travel/node_modules/
+
+*.env
