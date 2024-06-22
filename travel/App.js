@@ -1,4 +1,4 @@
-import { View, Text, Image } from 'react-native'
+import { View, Text, Image, StyleSheet } from 'react-native'
 import React, { Children, useEffect, useState } from 'react'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -17,6 +17,7 @@ import HomeScreen from './screens/HomeScreen';
 import MessageScreen from './screens/MessageScreen';
 import NotificationScreen from './screens/NotificationScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import EditProfileScreen from './screens/EditProfileScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -24,23 +25,45 @@ const Tab = createBottomTabNavigator();
 //Defines Icon
 const homeIcon = require('./assets/icons/home.png');
 const messageIcon = require('./assets/icons/message.png');
+const messageIconNA = require('./assets/icons/messageNA.png');
 const notificationIcon = require('./assets/icons/notification.png');
+const notificationIconNA = require('./assets/icons/notificationNA.png');
 const profileIcon = require('./assets/icons/profile.png');
+const profileIconNA = require('./assets/icons/profileNA.png');
 
 
 function Home() {
   return (
-      <Tab.Navigator initialRouteName='HomeScreen' screenOptions={{ tabBarStyle: {backgroundColor: "red"}, headerShown: false,}}>
-        <Tab.Screen name="HomeScreen" component={HomeScreen} options={{tabBarIcon: ({focused}) => {
-          <Image source={homeIcon} style={{
-            width: 25,
-            height: 25,
-            tintColor: focused ? 'blue' : 'gray',
-          }}/>
-        }}}/>
-        <Tab.Screen name="MessageScreen" component={MessageScreen} />
-        <Tab.Screen name="NotificationScreen" component={NotificationScreen} />
-        <Tab.Screen name="ProfileScreen" component={ProfileScreen} />
+      <Tab.Navigator initialRouteName='HomeScreen' screenOptions={{ 
+        tabBarStyle: {backgroundColor: "#FFFFFF", elevation: 0, borderWidth: 0,}, 
+        headerShown: false,
+        tabBarLabelPosition: "beside-icon",      
+      }}
+        >
+        <Tab.Screen name="HomeScreen" component={HomeScreen} options={{
+          tabBarIcon: ({focused}) =>(
+            <View style={[styles.tabItemContainer, {backgroundColor: focused ? "#1CB986" : "#D2D3D5"}]}>
+              <Image
+              source={homeIcon}
+              style={[styles.icon]}
+            /> 
+            <Text style={[styles.labelText]}>Home</Text>
+          </View>
+          ),
+          tabBarLabel: () =>  null
+        }}/>
+        <Tab.Screen name="MessageScreen" component={MessageScreen} options={{
+          tabBarIcon: ({focused}) => focused ? <Image source={messageIconNA} /> : <Image source={messageIcon} />,
+          tabBarLabel: ({focused}) =>  null
+        }} />
+        <Tab.Screen name="NotificationScreen" component={NotificationScreen} options={{
+          tabBarIcon: ({focused}) => focused ? <Image source={notificationIconNA} /> : <Image source={notificationIcon} />,
+          tabBarLabel: () =>  null
+        }} />
+        <Tab.Screen name="ProfileScreen" component={ProfileScreen} options={{
+          tabBarIcon: ({focused}) => focused ? <Image source={profileIconNA} /> : <Image source={profileIcon} />,
+          tabBarLabel: () =>  null
+        }} />
       </Tab.Navigator>
   );
 }
@@ -92,7 +115,10 @@ const App = () => {
               <Stack.Screen name="Home" component={Home} />
             </>
           ) : (
-            <Stack.Screen name="Home" component={Home} />
+            <>
+              <Stack.Screen name="Home" component={Home} />
+              <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+            </>
           )
         }
       </Stack.Navigator>
@@ -101,3 +127,26 @@ const App = () => {
 }
 
 export default App
+
+const styles = StyleSheet.create({
+  tabItemContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 80,
+    paddingHorizontal: 20,
+    paddingVertical: 5,
+    borderRadius: 10
+  },
+  icon: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
+    marginRight: 8, // Adjust the spacing between icon and text as needed
+  },
+  labelText: {
+    fontSize: 13,
+    color: "#fff",
+    fontFamily: "Nunito_700Bold",
+  },
+})

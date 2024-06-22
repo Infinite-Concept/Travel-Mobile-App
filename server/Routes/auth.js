@@ -12,11 +12,6 @@ const validatePassword = body("password").trim().escape()
 const validateFullName = body("fullName").trim().escape()
 
 
-router.get("/", (req, res) => {
-    console.log("hello");
-    res.send("welcome")
-})
-
 router.post("/create", validateEmail, validatePassword, validateFullName, async (req, res) => {
     try {
         const errors = validationResult(req);
