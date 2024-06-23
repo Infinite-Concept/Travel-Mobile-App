@@ -18,6 +18,8 @@ import MessageScreen from './screens/MessageScreen';
 import NotificationScreen from './screens/NotificationScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
+import ConfirmationScreen from './screens/ConfirmationScreen';
+import ResetPasswordScreen from './screens/ResetPasswordScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -112,6 +114,8 @@ const App = () => {
               <Stack.Screen name="Register" component={RegisterScreen} />
               <Stack.Screen name="Login" component={LoginScreen} />
               <Stack.Screen name="Forgot" component={ForgotPasswordScreen} />
+              <Stack.Screen name="Confirmation" component={ConfirmationScreen} />
+              <Stack.Screen name="Reset-forgot" component={ResetPasswordScreen} />
               <Stack.Screen name="Home" component={Home} />
             </>
           ) : (

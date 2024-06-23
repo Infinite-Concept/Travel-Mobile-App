@@ -5,28 +5,23 @@ import { styles } from '../common/style/Form'
 import axios from 'axios';
 
 const ForgotPasswordScreen = ({ navigation }) => {
-  const[email, setEmail] = useState("")
-  const[emailError, setEmailError] = useState("")
-
+  const[emailValue, setEmail] = useState("")
 
   const handlePassword = async () => {
-    let emailValid = false
+    let email = emailValue.trim()
 
     if(!email){
-      setEmailError("Password field is required")
-    }else if(email.indexOf(' ') >= 0){
-      setEmailError('Email cannot contain spaces'); 
+      Alert.alert('Empty Field', "*****all input field are required*****");
     }else{
-      setEmailError("")
-      emailValid = true
-    }
-
-    if(email){
+      
       try {
+        
         const response = await axios.post('http://192.168.1.18:4567/user/forgot-password', { email });
-        Alert.alert('Email sent', response.data.message);
+        Alert.alert('Confirmation Code Sent', response.data.message);
+        navigation.navigate("Confirmation")
       } catch (error) {
-        Alert.alert('Error', 'Failed to send email. Please try again later.');
+        Alert.alert('Error', error.response.data.message || 'Something went wrong');
+        console.log(error);
       }
     }
   }
@@ -46,7 +41,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
         <View>
           <View style={styles.inputGroup}>
-            <TextInput placeholder='Enter Email / Phone Number' style={styles.textInput} value={email} onChangeText={(text) => setEmail(test)} />
+            <TextInput placeholder='Enter Email / Phone Number' style={styles.textInput} value={emailValue} onChangeText={(text) => setEmail(text)} />
           </View>
 
           <TouchableOpacity style={styles.register} onPress={() => handlePassword()}>

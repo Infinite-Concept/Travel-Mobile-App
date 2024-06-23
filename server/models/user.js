@@ -7,6 +7,35 @@ const UserScheme = new mongoose.Schema({
         trim: true,
         lowercase: true
     },
+    phone: {
+        type: String,
+        trim: true,
+    },
+    zipCode: {
+        type: String,
+        trim: true,
+    },
+    address: {
+        type: String,
+        trim: true,
+        lowercase: true
+    },
+    city: {
+        type: String,
+        trim: true,
+        lowercase: true
+    },
+    state: {
+        type: String,
+        required: true,
+        trim: true,
+        lowercase: true
+    },
+    country: {
+        type: String,
+        trim: true,
+        lowercase: true
+    },
     email: {
         type: String,
         required: true,
@@ -22,8 +51,9 @@ const UserScheme = new mongoose.Schema({
         type: Date, 
         default: Date.now
     },
-    resetPasswordToken: { type: String },
-    resetPasswordExpires: { type: Date },
+    resetPasswordCode: { type: String },
+    resetPasswordCodeExpires: { type: Date },
+    resetPasswordToken: {type: String}
 })
 
 module.exports =  mongoose.model("User", UserScheme)

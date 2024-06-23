@@ -50,12 +50,14 @@ export const styles = {
         backgroundColor: "#fff",
         borderRadius: 10,
         paddingHorizontal: 20,
-        paddingVertical: 12
+        paddingVertical: 12,
+        gap: 20,
     },
     textInput: {   
         color: "#B3B2B2",
         fontSize: 14,
         fontFamily: "Poppins_500Medium",
+        width: "80%"
     },
     parentInput: {
         rowGap: 10

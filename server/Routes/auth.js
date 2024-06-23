@@ -43,7 +43,7 @@ router.post("/create", validateEmail, validatePassword, validateFullName, async 
 
         let savedUser = await user.save()
 
-        let subject = `You have successful registered for with traveler`
+        let subject = `You have successful registered with traveler`
         let text = `
                 Traveler \n\n\n
                 Dear User,
@@ -113,59 +113,82 @@ router.post("/forgot-password", validateEmail, async(req, res) => {
         const user = await User.findOne({email});
 
         if(!user){
-            res.status(404).json({message: "User not found"})
+            return res.status(404).json({message: "User not found"})
         }
-
-        const token = crypto.randomBytes(20).toString('hex')
-
-        user.resetPasswordToken = token;
-        user.resetPasswordExpires = Date.now() + 3600000
+        
+        const confirmationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        user.resetPasswordCode = confirmationCode;
+        user.resetPasswordCodeExpires = Date.now() + 600000
 
         let savedUser = await user.save()
 
-        let subject = `Password Reset`
+        let subject = `Password Reset Confirmation Code`
         let text = `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n`
-        + `Please click on the following link, or paste this into your browser to complete the process:\n\n`
-        + `http://${req.headers.host}/reset-password/${token}\n\n`
+        + `Please copy and paste the following link, to complete the process:\n\n`
+        + `Your confirmation code is: ${confirmationCode}\n\n`
         + `If you did not request this, please ignore this email and your password will remain unchanged.\n`
 
         tranportMailer(savedUser.email, subject, text)
 
         res.status(201).json({message: "An email has been sent to your mail, confirm and proceed with you change of password"})
     } catch (error) {
-        console.error('Forgot password error: ', err);
+        console.error('Forgot password error: ', error);
         res.status(500).json({ message: 'Server error' });
     }
 })
 
-router.post("/reset-password/:token", async (req, res) => {
+router.post("/confirm-reset-code", async (req, res) => {
     try {
+        const{confirmationCode} = req.body
 
-        const{token} = req.params
-        const{newPassword} = req.body
-
-        const user = User.findOne({
-            resetPasswordToken: token,
-            resetPasswordExpires: {$gt: Date.now()}
+        const user = await User.findOne({
+            resetPasswordCode: confirmationCode,
+            resetPasswordCodeExpires: {$gt: Date.now()}
         })
 
         if(!user){
-            res.status(400).json({message: "Token invalid or expired"})
+            return res.status(400).json({message: "Invalid or expired confirmation code"})
         }
 
-        let gen = await bcrypt.genSalt(10)
-        let hashedPassword = await bcrypt.hash(newPassword, gen)
+        const resetToken = crypto.randomBytes(20).toString("hex")
 
-        user.password = hashedPassword,
-        user.resetPasswordToken = undefined
-        user.resetPasswordExpires = undefined
-
+        user.resetPasswordToken = resetToken.toString();
+        user.resetPasswordCode = undefined
+        user.resetPasswordCodeExpires= undefined
         await user.save()
 
-        res.status(200).json({message: 'Password reset successfully'})
+        res.status(200).json({resetToken})
         
     } catch (error) {
+        console.error('Forgot password error: ', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+})
+
+router.post("/reset-password", async (req, res) => {
+    try {
+
+        const {resetToken, newPassword} = req.body
+
+        const user = await User.findOne({resetPasswordToken: resetToken})
+
+        if(!user){
+            return res.status(400).json({message: "Invalid or expired reset token"})
+        }
+
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(newPassword, salt)
+
+        user.password = hashedPassword
+        user.resetPasswordToken = undefined
         
+        await user.save()
+
+        res.status(200).json({message: "Password updated successfully"})
+        
+    } catch (error) {
+        console.error('Forgot password error: ', error);
+        res.status(500).json({ message: 'Server error' });
     }
 })
 
