@@ -18,7 +18,6 @@ mongoose.connect("mongodb://localhost/travel")
 .catch((err) => {
     console.log(err);
 })
-
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
